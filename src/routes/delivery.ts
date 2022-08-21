@@ -35,14 +35,13 @@ DeliveryRouter.get('/api/delivery/:id', async (req : Request, res : Response) =>
 // Create a new delivery
 DeliveryRouter.post('/api/delivery', async (req : Request, res : Response) => {
     try {
-        const {package_id, pickup_time, start_time, end_time, location, status} = req.body
+        const {package_id, pickup_time, start_time, end_time, location} = req.body
         const newDelivery = new Delivery ({
             package_id,
             pickup_time,
             start_time,
             end_time,
             location,
-            status,
         })
         const delivery = await newDelivery.save()
         if (!delivery) {

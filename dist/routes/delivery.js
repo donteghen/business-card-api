@@ -47,14 +47,13 @@ DeliveryRouter.get('/api/delivery/:id', (req, res) => __awaiter(void 0, void 0, 
 // Create a new delivery
 DeliveryRouter.post('/api/delivery', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { package_id, pickup_time, start_time, end_time, location, status } = req.body;
+        const { package_id, pickup_time, start_time, end_time, location } = req.body;
         const newDelivery = new delivery_1.Delivery({
             package_id,
             pickup_time,
             start_time,
             end_time,
             location,
-            status,
         });
         const delivery = yield newDelivery.save();
         if (!delivery) {

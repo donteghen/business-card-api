@@ -45,7 +45,7 @@ app.get("*", (req, res) => {
 
 // socket events
 io.on('connection', (socket) => {
-    console.log('connected')
+
     socket.emit('PING', 'PONG')
 
     // location changed listener

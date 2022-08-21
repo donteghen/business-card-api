@@ -9,12 +9,15 @@ const DeliverySchema = new mongoose_1.Schema({
     },
     pickup_time: {
         type: Number,
+        required: true
     },
     start_time: {
         type: Number,
+        required: true
     },
     end_time: {
         type: Number,
+        required: true
     },
     location: {
         lat: {
@@ -29,7 +32,8 @@ const DeliverySchema = new mongoose_1.Schema({
     status: {
         type: String,
         required: true,
-        enum: ['OPEN', 'PICKED_UP', 'IN_TRANSIT', 'DELIVERED', 'FAILED']
+        enum: ['OPEN', 'PICKED_UP', 'IN_TRANSIT', 'DELIVERED', 'FAILED'],
+        default: 'OPEN'
     }
 });
 const Delivery = (0, mongoose_1.model)('Delivery', DeliverySchema);

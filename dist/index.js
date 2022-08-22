@@ -21,7 +21,12 @@ const dbconfig_1 = require("./config/dbconfig");
 // declering and initialing various servers
 const app = (0, express_1.default)();
 const httpServer = (0, http_1.createServer)(app);
-const io = new socket_io_1.Server(httpServer);
+const io = new socket_io_1.Server(httpServer, {
+    cors: {
+        origin: 'http://localhost:3000',
+        methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT']
+    }
+});
 dotenv_1.default.config();
 (0, dbconfig_1.connectDb)();
 // routes imports
@@ -47,8 +52,9 @@ io.on('connection', (socket) => {
     socket.emit('PING', 'PONG');
     // location changed listener
     socket.on('LOCATION_CHANGED', (data) => __awaiter(void 0, void 0, void 0, function* () {
-        const delivery = yield delivery_2.Delivery.findOneAndUpdate({ _id: data.deliveryId }, { $set: { lat: data.location.lat, log: data.location.log } }, { new: true });
-        // console.log('the delivery  for location change is: ', delivery)
+        // console.log(data.location)
+        const delivery = yield delivery_2.Delivery.findOneAndUpdate({ _id: data.deliveryId }, { $set: { location: { lat: data.location.lat, log: data.location.log } } }, { new: true });
+        // console.log('the delivery  for location change is: ', delivery.location)
         const payload = {
             event: 'DELIVERY_UPDATE',
             delivery
@@ -58,8 +64,9 @@ io.on('connection', (socket) => {
     }));
     // status changed listener
     socket.on('STATUS_CHANGED', (data) => __awaiter(void 0, void 0, void 0, function* () {
+        // console.log(data.status)
         const delivery = yield delivery_2.Delivery.findOneAndUpdate({ _id: data.deliveryId }, { $set: { status: data.status } }, { new: true });
-        // console.log('the delivery for status change is: ', delivery)
+        // console.log('the delivery for status change is: ', delivery.status)
         const payload = {
             event: 'DELIVERY_UPDATE',
             delivery
@@ -68,7 +75,7 @@ io.on('connection', (socket) => {
         // console.log('status updated with no issues')
     }));
     socket.on('disconnect', () => {
-        console.log('Connection Disconnected');
+        console.log('Disconnected');
     });
 });
 // start the httpserver server

@@ -10,7 +10,12 @@ import { connectDb } from "./config/dbconfig";
 // declering and initialing various servers
 const app = express();
 const httpServer = createServer(app)
-const io = new Server(httpServer)
+const io = new Server(httpServer, {
+    cors: {
+      origin: 'http://localhost:3000',
+      methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT']
+    }
+  })
 
 dotenv.config()
 connectDb()
@@ -45,17 +50,17 @@ app.get("*", (req, res) => {
 
 // socket events
 io.on('connection', (socket) => {
-
     socket.emit('PING', 'PONG')
 
     // location changed listener
     socket.on('LOCATION_CHANGED', async (data : LocationChangedPayload) => {
+        // console.log(data.location)
         const delivery = await Delivery.findOneAndUpdate(
             {_id : data.deliveryId},
-            {$set : {lat : data.location.lat, log : data.location.log}},
+            {$set : {location: {lat : data.location.lat, log : data.location.log}}},
             {new : true}
         )
-        // console.log('the delivery  for location change is: ', delivery)
+        // console.log('the delivery  for location change is: ', delivery.location)
         const payload : DeliveryUpdatedPayload = {
             event : 'DELIVERY_UPDATE',
             delivery
@@ -66,12 +71,13 @@ io.on('connection', (socket) => {
 
     // status changed listener
     socket.on('STATUS_CHANGED', async (data : StatusChangedPayload) => {
+        // console.log(data.status)
         const delivery = await Delivery.findOneAndUpdate(
             {_id : data.deliveryId},
             {$set : {status : data.status}},
             {new : true}
         )
-        // console.log('the delivery for status change is: ', delivery)
+        // console.log('the delivery for status change is: ', delivery.status)
         const payload : DeliveryUpdatedPayload = {
             event : 'DELIVERY_UPDATE',
             delivery
@@ -80,7 +86,7 @@ io.on('connection', (socket) => {
         // console.log('status updated with no issues')
     })
     socket.on('disconnect', () => {
-        console.log('Connection Disconnected')
+        console.log('Disconnected')
     })
 })
 
